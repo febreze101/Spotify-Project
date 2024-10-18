@@ -1,4 +1,4 @@
-## Installation
+## Requirements
 
 Here are the libraries you need to install
 ```bash
