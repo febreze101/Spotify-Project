@@ -2,17 +2,21 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 '''!!!! REMOVE BEFORE SENDING OR SAVING !!!!'''
-
+#did
+#c_id
+#c_secret
+#uid
 '''!!!! REMOVE BEFORE SENDING OR SAVING !!!!'''
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=c_id,
     client_secret=c_secret,
     redirect_uri="http://localhost:1508",
-    scope="user-modify-playback-state user-read-playback-state playlist-modify-private"))
+    scope="user-modify-playback-state user-read-playback-state playlist-modify-private playlist-modify-public"))
 
 def info():
-    stuff = sp.current_playback(market=None, additional_types=None)
+    #stuff = sp.current_playback(market=None, additional_types=None)
+    stuff = sp.current_user_playing_track()
     for thing in stuff:
         print(thing)
         if type(stuff[thing]) == dict:
@@ -24,72 +28,67 @@ def info():
 
 def playSong():
     try:
-        sp.start_playback(device_id=pid)
+        sp.start_playback(device_id=did)
     except:
         return 0
     return 1
 
 def pauseSong():
     try:
-        sp.pause_playback(device_id=pid)
+        sp.pause_playback(device_id=did)
     except:
         return 0
     return 1
 
 def skipSong():
     try:
-        sp.next_track(device_id=pid)
+        sp.next_track(device_id=did)
     except:
         return 0
     return 1
 
 def previousSong():
     try:
-        sp.previous_track(device_id=pid)
+        sp.previous_track(device_id=did)
     except:
         return 0
     return 1
 
 def shuffle(state):
     try:
-        sp.shuffle(state, device_id=pid)
+        sp.shuffle(state, device_id=did)
     except:
         return 0
     return 1
 
 def repeat(state):
     try:
-        sp.repeat(state, device_id=pid)
+        if state:
+            sp.repeat("track", device_id= did)
+        else:
+            sp.repeat("off", device_id=did)
     except:
         return 0
     return 1
 
 def seekTo(time):
     try:
-        sp.seek_track(position_ms=time, device_id=pid)
+        sp.seek_track(position_ms=time, device_id=did)
     except:
         return 0
     return 1
 
 def createPlaylist(name, isPublic=False, isCollab=False, desc=""):
     try:
-        sp.user_playlist_create(uid, name, public=isPublic, collaborative=isCollab, description='')
+        sp.user_playlist_create(uid, name, isPublic, isCollab, desc)
     except:
         return 0
     return 1
 
 
 
-
 def main():
-    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-    client_id=c_id,
-    client_secret=c_secret,
-    redirect_uri="http://localhost:1508",
-    scope="user-modify-playback-state"))
-
     print("Spotify is working")
-    createPlaylist("testing")
 
 if __name__ == "__main__":
     main()
