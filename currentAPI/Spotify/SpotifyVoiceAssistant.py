@@ -39,7 +39,7 @@ class PlaylistCreator:
         self.speech_handler = SpeechHandler()
 
     def create_playlist(self):
-        print("\n🎵 Creating a new playlist...")
+        print("\nCreating a new playlist...")
 
         # Get and confirm the playlist name
         while True:
@@ -63,7 +63,13 @@ class PlaylistCreator:
         print(f"Collaborative: {'Yes' if is_collaborative else 'No'}")
         if description:
             print(f"Description: {description}")
-        print("Playlist created successfully!")
+        print("Creating Playlist...!")
+        return {
+            "name": name,
+            "public": is_public,
+            "collab": is_collaborative,
+            "desc": description
+        }
 
 class SpotifyVoiceAssistant:
     def __init__(self):
@@ -121,6 +127,13 @@ class SpotifyVoiceAssistant:
             elif "create" in command:
                 print('playlist')
                 playlist = self.playlist_creator.create_playlist()
+                print(playlist)
+                ct.createPlaylist(
+                    name=playlist.get('name'),
+                    isPublic=playlist.get('public'),
+                    isCollab=playlist.get('collab'),
+                    desc=playlist.get('desc')
+                )
             
             elif "help" in command:
                 self.show_help()
