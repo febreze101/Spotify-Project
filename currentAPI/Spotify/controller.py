@@ -2,11 +2,16 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 '''!!!! REMOVE BEFORE SENDING OR SAVING !!!!'''
-#did
-#c_id
-#c_secret
-#uid
+
 '''!!!! REMOVE BEFORE SENDING OR SAVING !!!!'''
+
+'''
+Function returns:
+1 = successful
+0 = no change (already in state)
+-1 = critical error (currenly outside of control)
+-2 = option not supported (currently only used in volume control)
+'''
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=c_id,
@@ -16,7 +21,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
 
 def info():
     #stuff = sp.current_playback(market=None, additional_types=None)
-    stuff = sp.current_user_playing_track()
+    stuff = sp.current_playback()
     for thing in stuff:
         print(thing)
         if type(stuff[thing]) == dict:
@@ -27,56 +32,129 @@ def info():
         print()
 
 def playSong():
-    try:
-        sp.start_playback(device_id=did)
-    except:
-        return 0
-    return 1
+    if 'resuming' not in sp.current_playback()['actions']['disallows']:    
+        try:
+            sp.start_playback(device_id=did)
+        except:
+            return -1
+        return 1
+    return 0
 
 def pauseSong():
-    try:
-        sp.pause_playback(device_id=did)
-    except:
-        return 0
-    return 1
+    if 'pausing' not in sp.current_playback()['actions']['disallows']:
+        try:
+            sp.pause_playback(device_id=did)
+        except Exception as e:
+            print ("\n",e, "\n")
+            return -1
+        return 1
+    return 0
 
 def skipSong():
-    try:
-        sp.next_track(device_id=did)
-    except:
-        return 0
-    return 1
+    if 'skipping_next' not in sp.current_playback()['actions']['disallows']:
+        try:
+            sp.next_track(device_id=did)
+        except:
+            return -1
+        return 1
+    return 0
 
 def previousSong():
-    try:
-        sp.previous_track(device_id=did)
-    except:
-        return 0
-    return 1
+    if 'skipping_previous' not in sp.current_playback()['actions']['disallows']:
+        try:
+            sp.previous_track(device_id=did)
+        except:
+            return -1
+        return 1
+    return 0
 
 def shuffle(state):
-    try:
-        sp.shuffle(state, device_id=did)
-    except:
-        return 0
-    return 1
+    if state != sp.current_playback()['shuffle_state']:
+        try:
+            sp.shuffle(state, device_id=did)
+        except:
+            return -1
+        return 1
+    return 0
 
 def repeat(state):
-    try:
-        if state:
-            sp.repeat("track", device_id= did)
-        else:
-            sp.repeat("off", device_id=did)
-    except:
-        return 0
-    return 1
+    if state != sp.current_playback()['repeat_state']:
+        try:
+            if state:
+                sp.repeat("track", device_id= did)
+            else:
+                sp.repeat("off", device_id=did)
+        except:
+            return -1
+        return 1
+    return 0
 
 def seekTo(time):
     try:
-        sp.seek_track(position_ms=time, device_id=did)
+        sp.seek_track(position_ms=time*1000, device_id=did)
     except:
         return 0
     return 1
+
+def volumeUp():
+    temp = sp.current_playback()['device']
+    if temp['supports_volume']:
+        try:
+            if temp['volume_percent'] > 89:
+                sp.volume(100)
+                return 1
+            elif temp['volume_percent'] == 100:
+                return 0
+            else:
+                sp.volume(temp['volume_percent']+10)
+                return 1
+        except:
+            return -1
+    print("Current device doesn't support volume control")
+    return -2
+
+def volumeDown():
+    temp = sp.current_playback()['device']
+    if temp['supports_volume']:
+        try:
+            if temp['volume_percent'] < 11:
+                sp.volume(0)
+                return 1
+            elif temp['volume_percent'] == 0:
+                return 0
+            else:
+                sp.volume(temp['volume_percent']-10)
+                return 1
+        except:
+            return -1
+    print("Current device doesn't support volume control")
+    return -2
+
+def mute():
+    temp = sp.current_playback()['device']
+    if temp['supports_volume']:
+        if temp['volume_percent'] != 0:    
+            try:
+                sp.volume(0)
+                return 1
+            except:
+                return -1
+        return 0
+    print("Current device doesn't support volume control")
+    return -2
+
+def maxVolume():
+    temp = sp.current_playback()['device']
+    if temp['supports_volume']:
+        if temp['volume_percent'] != 100:    
+            try:
+                sp.volume(100)
+                return 1
+            except:
+                return -1
+        return 0
+    print("Current device doesn't support volume control")
+    return -2
 
 def createPlaylist(name, isPublic=False, isCollab=False, desc=""):
     try:
@@ -86,31 +164,9 @@ def createPlaylist(name, isPublic=False, isCollab=False, desc=""):
     return 1
 
 
-
 def main():
     print("Spotify is working")
 
+
 if __name__ == "__main__":
     main()
-
-    
-
-
-
-''' The fun stuff
-user-read-playback-state   app-remote-control   streaming
-sp.me()
-shuffle(state, device_id=None)
-seek_track(position_ms, device_id=None)
-repeat(state, device_id=None)
-previous_track(device_id=None)
-next_track(device_id=None)
-pause_playback(device_id=None)
-current_playback(market=None, additional_types=None)
-current_user_playing_track()
-start_playback(device_id=None, context_uri=None, uris=None, offset=None, position_ms=None)
-devices()
-search(q, limit=10, offset=0, type='track', market=None)
-transfer_playback(device_id, force_play=True)
-
-'''
