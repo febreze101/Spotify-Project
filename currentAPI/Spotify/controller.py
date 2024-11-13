@@ -11,6 +11,8 @@ Function returns:
 0 = no change (already in state)
 -1 = critical error (currenly outside of control)
 -2 = option not supported (currently only used in volume control)
+-3 = item not found (playlist searching currently)
+-4 = improper command (in repeat)
 '''
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
@@ -77,13 +79,21 @@ def shuffle(state):
         return 1
     return 0
 
+# Takes any string input including "" which defaults to track repeat 
+# Some additional words are added for more common terms that are changed to the appropriate string
 def repeat(state):
+    keywords = ["off","track","context","playlist","song", ""]
+    if state not in keywords:
+        return -4
+    if state == "song":
+        state = "track"
+    elif state == "playlist":
+        state = "context"
+    elif state == "":
+        state = "track"
     if state != sp.current_playback()['repeat_state']:
         try:
-            if state:
-                sp.repeat("track", device_id= did)
-            else:
-                sp.repeat("off", device_id=did)
+            sp.repeat(state, device_id= did)
         except:
             return -1
         return 1
@@ -163,10 +173,41 @@ def createPlaylist(name, isPublic=False, isCollab=False, desc=""):
         return 0
     return 1
 
+# Takes any string input as name of playlist to be added to
+def addCurrentSongToPlaylist(name):
+    playlists = [(p['name'].lower(), p['id']) for p in sp.current_user_playlists()['items']]
+    selected = [playlist for playlist in playlists if name == playlist[0]]
+    currentSong = sp.current_playback()['item']
+    if selected:
+        try:
+            sp.playlist_add_items(selected[0][1],[currentSong['id']],0)
+            return 1
+        except:
+            return -1
+    else:
+        selected = [playlist for playlist in playlists if name in playlist[0]]
+        if selected:
+            try:
+                sp.playlist_add_items(selected[0][1],[currentSong['id']],0)
+                return 1
+            except:
+                return -1
+        else:
+            #print(f"No playlist containing {name} found")
+            return -3
 
 def main():
     print("Spotify is working")
 
 
+
 if __name__ == "__main__":
     main()
+
+
+
+'''
+playlist_remove_all_occurrences_of_items
+playlist_add_items
+current_user_playlists
+'''
