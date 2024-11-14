@@ -11,7 +11,7 @@ Function returns:
 0 = no change (already in state)
 -1 = critical error (currenly outside of control)
 -2 = option not supported (currently only used in volume control)
--3 = item not found (playlist searching currently)
+-3 = item not found (playlist searching and playing)
 -4 = improper command (in repeat)
 '''
 
@@ -196,6 +196,28 @@ def addCurrentSongToPlaylist(name):
             #print(f"No playlist containing {name} found")
             return -3
 
+# Takes any string input as name of playlist to be played
+def playPlaylist(name):
+    playlists = [(p['name'].lower(), p['uri']) for p in sp.current_user_playlists()['items']]
+    selected = [playlist for playlist in playlists if name == playlist[0]]
+    if selected:
+        try:
+            sp.start_playback(device_id=did, context_uri=selected[0][1])
+            return 1
+        except:
+            return -1
+    else:
+        selected = [playlist for playlist in playlists if name in playlist[0]]
+        if selected:
+            try:
+                sp.start_playback(device_id=did, context_uri=selected[0][1])
+                return 1
+            except:
+                return -1
+        else:
+            #print(f"No playlist containing {name} found")
+            return -3
+
 def main():
     print("Spotify is working")
 
@@ -207,7 +229,7 @@ if __name__ == "__main__":
 
 
 '''
+to do ish
 playlist_remove_all_occurrences_of_items
-playlist_add_items
-current_user_playlists
+search(q, limit=10, offset=0, type='track', market=None)
 '''
