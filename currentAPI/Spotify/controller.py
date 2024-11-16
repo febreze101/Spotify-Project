@@ -19,7 +19,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=c_id,
     client_secret=c_secret,
     redirect_uri="http://localhost:1508",
-    scope="user-modify-playback-state user-read-playback-state playlist-modify-private playlist-modify-public"))
+    scope="user-modify-playback-state user-read-playback-state playlist-modify-private playlist-modify-public user-read-recently-played"))
 
 def info():
     #stuff = sp.current_playback(market=None, additional_types=None)
@@ -195,6 +195,30 @@ def addCurrentSongToPlaylist(name):
         else:
             #print(f"No playlist containing {name} found")
             return -3
+
+
+def addPreviousSongToPlaylist(name):
+    playlists = [(p['name'].lower(), p['id']) for p in sp.current_user_playlists()['items']]
+    selected = [playlist for playlist in playlists if name == playlist[0]]
+    lastSong = sp.current_user_recently_played(limit=1)['items'][0]['track']
+    if selected:
+        try:
+            sp.playlist_add_items(selected[0][1],[lastSong['id']],0)
+            return 1
+        except:
+            return -1
+    else:
+        selected = [playlist for playlist in playlists if name in playlist[0]]
+        if selected:
+            try:
+                sp.playlist_add_items(selected[0][1],[lastSong['id']],0)
+                return 1
+            except:
+                return -1
+        else:
+            #print(f"No playlist containing {name} found")
+            return -3
+
 
 # Takes any string input as name of playlist to be played
 def playPlaylist(name):
