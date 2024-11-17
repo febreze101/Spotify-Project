@@ -9,6 +9,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=c_id,
     client_secret=c_secret,
     redirect_uri="http://localhost:1508",
+<<<<<<< HEAD
     scope="user-modify-playback-state user-read-playback-state playlist-modify-private"))
 
 def info():
