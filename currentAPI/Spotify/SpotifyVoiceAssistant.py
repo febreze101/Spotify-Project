@@ -153,9 +153,14 @@ class SpotifyVoiceAssistant:
                 ct.addPreviousSongToPlaylist(name)
                 
             elif "play playlist" in command:
-                playlist_name = input("What playlist do you want to play? ")
-                print(f" Playing {playlist_name}")
-                ct.playPlaylist(playlist_name)
+                seek_time = input("What playlist do you want to play? ")
+                print(f" Playing {seek_time}")
+                ct.playPlaylist(seek_time)
+                
+            elif "seek" in command:
+                seek_time = input("What time do you want to seek to? ")
+                print(f" Seeking to {seek_time}")
+                ct.seekTo(seek_time)
             
             elif "help" in command:
                 self.show_help()
