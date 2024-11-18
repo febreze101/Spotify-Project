@@ -86,6 +86,15 @@ class SpotifyVoiceAssistant:
         print("• Create - Start playlist creation")
         print("• Help - Show this help message")
         print("• Exit - Quit the program")
+        # new additions
+        print("• Volume up - Raise the volume")
+        print("• Volume down - Lower the volume")
+        print("• Mute - Mute the volume")
+        print("• Max volume - Set volume to the maximum")
+        print("• Add current song to playlist - Add the currently playing song to a playlist")
+        print("• Add previous song to playlist - Add the previously played song to a playlist")
+        print("• Play playlist - Play a specified playlist")
+        print("• Advance - Jump to a specific time in the current track")
 
     def process_command(self, command):
         """Process voice commands for Spotify control"""
@@ -164,10 +173,10 @@ class SpotifyVoiceAssistant:
                 print(" Setting max volume.")
                 ct.maxVolume()
                 
-            elif "seek" in command:
-                seek_time = self.speech_handler.listen_for_speech("What time do you want to seek to? ")
+            elif "advance" in command:
+                seek_time = self.speech_handler.listen_for_speech("What time do you want to advance/seek to? ")
                 print(f" Seeking to {seek_time}")
-                ct.seekTo(seek_time)
+                ct.seekTo(int(seek_time))
                 
             elif "play" in command:
                 print(" Playing")
