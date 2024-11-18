@@ -100,7 +100,7 @@ class SpotifyVoiceAssistant:
         """Process voice commands for Spotify control"""
         try:
                 
-            if "play" in command and "playlist" in command:
+            if "play playlist" in command:
                 playlist_name = self.speech_handler.listen_for_speech("Please say the name of the playlist you want to play.")
                 if playlist_name:
                     print(f" Playing playlist: {playlist_name}")
