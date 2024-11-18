@@ -90,10 +90,16 @@ class SpotifyVoiceAssistant:
     def process_command(self, command):
         """Process voice commands for Spotify control"""
         try:
-            if "play" in command:
-                print(" Playing")
-                ct.playSong()
-            
+                
+            if "play" in command and "playlist" in command:
+                playlist_name = self.speech_handler.listen_for_speech("Please say the name of the playlist you want to play.")
+                if playlist_name:
+                    print(f" Playing playlist: {playlist_name}")
+                    ct.playPlaylist(playlist_name)
+                else:
+                    print(" Could not recognize the playlist name. Please try again.")
+                # ct.playPlaylist(playlist_name)
+                
             elif "pause" in command:
                 print(" Paused")
                 ct.pauseSong()
@@ -102,6 +108,22 @@ class SpotifyVoiceAssistant:
                 print(" Skipping to next track")
                 ct.skipSong()
             
+            elif "add" in command and "previous" in command:
+                name = self.speech_handler.listen_for_speech("What playlist do you want to add to? ")
+                if name:
+                    print(f" Adding to {name}")
+                    ct.addPreviousSongToPlaylist(name)
+                else:
+                    print(" Could not recognize the playlist name. Please try again.")
+                
+            elif "add" in command and "current" in command:
+                name = self.speech_handler.listen_for_speech("What playlist do you want to add to? ")
+                if name:
+                    print(f" Adding to {name}")
+                    ct.addCurrentSongToPlaylist(name)
+                else:
+                    print(" Could not recognize the playlist name. Please try again.")
+                
             elif "previous" in command or "go back" in command:
                 print(" Playing previous track")
                 ct.previousSong()
@@ -142,25 +164,14 @@ class SpotifyVoiceAssistant:
                 print(" Setting max volume.")
                 ct.maxVolume()
                 
-            elif "add current song to playlist" in command:
-                name = input("What song do you want to add? ")
-                print(f" Adding {name}")
-                ct.addCurrentSongToPlaylist(name)
-                
-            elif "add previous song to playlist" in command:
-                name = input("What song do you want to add? ")
-                print(f" Adding {name}")
-                ct.addPreviousSongToPlaylist(name)
-                
-            elif "play playlist" in command:
-                seek_time = input("What playlist do you want to play? ")
-                print(f" Playing {seek_time}")
-                ct.playPlaylist(seek_time)
-                
             elif "seek" in command:
-                seek_time = input("What time do you want to seek to? ")
+                seek_time = self.speech_handler.listen_for_speech("What time do you want to seek to? ")
                 print(f" Seeking to {seek_time}")
                 ct.seekTo(seek_time)
+                
+            elif "play" in command:
+                print(" Playing")
+                ct.playSong()
             
             elif "help" in command:
                 self.show_help()
