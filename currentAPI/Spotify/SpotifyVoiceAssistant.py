@@ -125,6 +125,37 @@ class SpotifyVoiceAssistant:
             elif "create" in command:
                 print('playlist')
                 self.playlist_creator.create_playlist()
+                
+            elif "volume up" in command:
+                print(" raising volume")
+                ct.volumeUp()
+                
+            elif "volume down" in command:
+                print(" lowering volume")
+                ct.volumeDown()
+            
+            elif "mute" in command:
+                print(" mute")
+                ct.mute()
+            
+            elif "max volume" in command:
+                print(" Setting max volume.")
+                ct.maxVolume()
+                
+            elif "add current song to playlist" in command:
+                name = input("What song do you want to add? ")
+                print(f" Adding {name}")
+                ct.addCurrentSongToPlaylist(name)
+                
+            elif "add previous song to playlist" in command:
+                name = input("What song do you want to add? ")
+                print(f" Adding {name}")
+                ct.addPreviousSongToPlaylist(name)
+                
+            elif "play playlist" in command:
+                playlist_name = input("What playlist do you want to play? ")
+                print(f" Playing {playlist_name}")
+                ct.playPlaylist(playlist_name)
             
             elif "help" in command:
                 self.show_help()
