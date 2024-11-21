@@ -145,13 +145,17 @@ class SpotifyVoiceAssistant:
                 print(" Shuffle disabled")
                 ct.shuffle(False)
             
-            elif "repeat on" in command:
-                print(" Repeat enabled")
-                ct.repeat(True)
+            elif "repeat" in command:
+                print(" Repeating song")
+                ct.repeat('')
             
-            elif "repeat off" in command:
-                print(" Repeat disabled")
-                ct.repeat(False)
+            elif "repeat song" in command:
+                print(" Repeating song")
+                ct.repeat('song')
+            
+            elif "repeat playlist" in command:
+                print(" setting playlist to repeat")
+                ct.repeat('playlist')
             
             elif "create" in command:
                 print('playlist')
